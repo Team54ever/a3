@@ -20,6 +20,8 @@ package lucene;
 import treccar.Data;
 
 
+
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -80,11 +82,13 @@ public class Indexer {
 			
 			
 			System.out.println("Indexing to directory '" + indexPath + "'...");
+			
+			//System.out.println(similarity);
 
 			Directory dir = FSDirectory.open(Paths.get(indexPath));
 			Analyzer analyzer = new StandardAnalyzer();
 			IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
-
+			//iwc.setSimilarity(similarity);
 			IndexWriter writer = new IndexWriter(dir, iwc);
 
 			// Function call
