@@ -5,7 +5,7 @@ import numpy
 # ----------- global variables -----------------------
 usageMsg = '''
 
-Usage: Score.py [runfile1] [runfile2] 
+Usage: SRCC.py [runfile1] [runfile2] 
 
 '''
 
@@ -53,13 +53,13 @@ def getSRCC(doc1, doc2):
 
 # -----------------------------------------------------------------------
 # --------------------------- main --------------------------------------
-#usage()
+usage()
 
-#file1 = sys.argv[1]
-#file2 = sys.argv[2]
+file1 = sys.argv[1]
+file2 = sys.argv[2]
 
-file1 = "/Users/paul.yuan/Desktop/outputfile_custom.txt"
-file2 = "/Users/paul.yuan/Desktop/outputfile.txt"
+#file1 = "/Users/paul.yuan/Desktop/outputfile_custom.txt"
+#file2 = "/Users/paul.yuan/Desktop/outputfile.txt"
 SRCC_list = []
 
 query_id = 'to_make_life_easier'
