@@ -30,14 +30,26 @@ def getSRCC(doc1, doc2):
         val *= val
         sum += val
 
+    if tmp > 100 :
+        rank = 0
+        for key in doc2:
+            if key not in doc1:
+                rank += int(doc2[key])
+        tmp_sum = 0
+        while tmp > 100 :
+            tmp_sum += tmp
+            tmp -= 1
+
+        sum += tmp_sum - rank
+
     #print ("?1 " + str(len(doc1)))
 
     if len(doc1) == 1 :
-        print (doc1)
+        result = 1
+    else :
+        result = 1 - ( (6*sum)/(len(doc1)*(len(doc1)*len(doc1) - 1)) )
 
-    #result = 1 - ( (6*sum)/(len(doc1)*(len(doc1)*len(doc1) - 1)) )
-
-    #return result
+    return result
 
 # -----------------------------------------------------------------------
 # --------------------------- main --------------------------------------
@@ -102,5 +114,8 @@ for line1 in runfile1.readlines():
 
 runfile1.close()
 
-print ("SRCC: " + str( sum(SRCC_list)/len(SRCC_list) ))
+#print(SRCC_list)
+#print(sum(SRCC_list))
+#print(len(SRCC_list))
+print ("SRCC: " + str( float(sum(SRCC_list))/len(SRCC_list) ))
 
