@@ -1,5 +1,6 @@
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
+
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
@@ -14,12 +15,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package lucene1;
-import treccar1.Data;
+package lucene;
+
+import treccar.Data;
+
+
+
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+
 import java.nio.file.Paths;
 
 import java.util.Date;
@@ -40,7 +47,7 @@ import org.apache.lucene.store.FSDirectory;
 
 import co.nstant.in.cbor.CborException;
 
-import treccar1.DeserializeData;
+import treccar.DeserializeData;
 
 import org.apache.lucene.search.similarities.BasicStats;
 import org.apache.lucene.search.similarities.SimilarityBase;
@@ -54,6 +61,8 @@ public class Indexer {
 	// Global name given to paraId and paraText
 	static String paraId;
 	static String paraText;
+	
+
 
 	/**
 	 * Index all text files under a directory.
@@ -61,24 +70,34 @@ public class Indexer {
 	 * @throws FileNotFoundException
 	 * @throws CborException
 	 */
-	public Indexer(String TEST200_DIR, String INDEX_DIR) throws CborException, FileNotFoundException {
-//To index, using train.test200.cbor.paragraphs from 
-//"C:\\Users\\Ajesh\\Desktop\\UNH\\Courses\\CS853\\Programming Assignment 1 Lucene Index for TREC Complex Answer Retrieval\\test200_all";
+	public Indexer(String TEST200_DIR, String INDEX_DIR, SimilarityBase similarity) throws CborException, FileNotFoundException {
+
 		System.setProperty("file.encoding", "UTF-8");
 		String test200path = TEST200_DIR;
 		String indexPath = INDEX_DIR;
 
+
 		Date start = new Date();
 		try {
+			
+			
 			System.out.println("Indexing to directory '" + indexPath + "'...");
+			
+			//System.out.println(similarity);
 
 			Directory dir = FSDirectory.open(Paths.get(indexPath));
 			Analyzer analyzer = new StandardAnalyzer();
 			IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
+			iwc.setSimilarity(similarity);
 			IndexWriter writer = new IndexWriter(dir, iwc);
+
 			// Function call
+			
 			indexParagraphs(writer, test200path);
+			
+
 			writer.close();
+
 			// Time in Milliseconds
 			Date end = new Date();
 			System.out.println(".................Indexing done");
@@ -87,11 +106,15 @@ public class Indexer {
 		} catch (IOException e) {
 			System.out.println(" caught a " + e.getClass() + "\n with message: " + e.getMessage());
 		}
+
 	}
+	
+	
+	
 
 	/*
 	 * indexParagraphs - Reads the data from the test200 path Deserialize the
-	 * paragraph file and stored as paraId and paraText. ParaId and ParaText is
+	 * paragraph file and stored as paraId and paraText ParaId and ParaText is
 	 * feeded to createIndex
 	 */
 	public String indexParagraphs(IndexWriter writer, String test200Path) throws CborException, IOException {
@@ -99,13 +122,14 @@ public class Indexer {
 		final FileInputStream fileInputStream2 = new FileInputStream(new File(paragraphs));
 		for (Data.Paragraph p : DeserializeData.iterableParagraphs(fileInputStream2)) {
 
-			paraId = p.getParaId().toString().toLowerCase();
-			paraText = p.getTextOnly().toString().toLowerCase();
+			paraId = p.getParaId().toString();
+			paraText = p.getTextOnly().toString();
 
 			createIndex(writer, paraId, paraText);
 
 		}
-                return paraId;
+		return paraId;
+
 	}
 
 	/*

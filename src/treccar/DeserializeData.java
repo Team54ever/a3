@@ -1,6 +1,8 @@
-package treccar1;
+package treccar;
 
 import co.nstant.in.cbor.CborDecoder;
+
+
 import co.nstant.in.cbor.CborException;
 import co.nstant.in.cbor.model.*;
 
@@ -9,7 +11,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import treccar1.Data;
+import treccar.Data;
 
 /**
  * User: dietz
@@ -17,6 +19,8 @@ import treccar1.Data;
  * Time: 1:56 PM
  */
 public class DeserializeData {
+    
+ 
     public static Iterator<Data.Page> iterAnnotations(InputStream inputStream) throws CborException {
 
         final CborDecoder decode = new CborDecoder(inputStream);
@@ -150,7 +154,7 @@ public class DeserializeData {
     public static Data.Page pageFromCbor(DataItem dataItem) {
         List<DataItem> array = ((Array) dataItem).getDataItems();
 
-//        assert(array.get(0).getTag().getValue() == 0L);
+       // assert(array.get(0).getTag().getValue() == 0L);
 
         UnicodeString pageName = (UnicodeString) array.get(1);
         ByteString pageId = (ByteString) array.get(2);
@@ -167,13 +171,14 @@ public class DeserializeData {
 
 
 
+
     private static Data.Para paraFromCbor(DataItem dataItem){
         return new Data.Para(paragraphFromCbor(dataItem));
     }
 
     public static Data.Paragraph paragraphFromCbor(DataItem dataItem) {
         List<DataItem> array = ((Array) dataItem).getDataItems();
-//        assert(array.get(0).getTag().getValue() == 0L);
+      //  assert(array.get(0).getTag().getValue() == 0L);
 
 //        List<DataItem> array2 = ((Array) array.get(1)).getDataItems();
 //        assert(((UnsignedInteger) array2.get(0)).getValue().intValue() == 0);
@@ -186,7 +191,7 @@ public class DeserializeData {
     }
 
 
-    public static Data.PageSkeleton pageSkeletonFromCbor(DataItem dataItem){
+    private static Data.PageSkeleton pageSkeletonFromCbor(DataItem dataItem){
         List<DataItem> array = ((Array) dataItem).getDataItems();
 
         switch( ((UnsignedInteger) array.get(0)).getValue().intValue()) {

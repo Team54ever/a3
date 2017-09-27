@@ -17,6 +17,8 @@
 package lucene;
 
 import java.io.BufferedReader;
+
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -51,67 +53,22 @@ import org.apache.lucene.search.similarities.SimilarityBase;
 
 public class Search {
 
-	// private static final String INDEX_DIR =
-	// "/Users/Nithin/Desktop/paragraphIndex";
-
+	static String OUTLINES_DIR = "/Users/Nithin/Desktop/test200/train.test200.cbor.outlines";
 	static final int i = 0;
 	static String pageId;
 	static String pageName;
-
-	static String TEST200_DIR = "/Users/Nithin/Desktop/test200/train.test200.cbor.paragraphs";
-	static String INDEX_DIR = "/Users/Nithin/Desktop/freshnewPath";
-	static String OUTLINES_DIR = "/Users/Nithin/Desktop/test200/train.test200.cbor.outlines";
-	static String OUTPUT_FILE_PATH = "/Users/Nithin/Desktop/outputfile";
-	static String OUTPUT_FILE_PATH_CUSTOM_SCORING_FUNCTION = "/Users/Nithin/Desktop/outputfile_custom";
 	
-	
-	
-
-	private Search() {
-
-	}
-
-	/** Simple command-line based search demo. */
-	public static void main(String[] args) throws Exception {
-
-		Indexer indexer = new Indexer(TEST200_DIR, INDEX_DIR);
-		IndexSearcher searcher = createSearcher(INDEX_DIR);
-
-		System.out.println("extracting Page Id and pageName \n");
-		
-		//read_Queries_and_Write_Rankings(OUTLINES_DIR, OUTPUT_FILE_PATH,  searcher);
-		Custom_Scoring_Function(OUTLINES_DIR, OUTPUT_FILE_PATH_CUSTOM_SCORING_FUNCTION, searcher);
-		System.out.println("File write finished \n");
-
-
-
-	}
-	
-	/*
-	 * Using custom Scoring function and evaluating the results
-	 */
-	static void Custom_Scoring_Function(String outline_path, String outputpath, IndexSearcher searcher) throws Exception
+	public Search(SimilarityBase similarity, String INDEX_DIR, String outputpath) throws Exception
 	{
-		SimilarityBase mySimilarity = new SimilarityBase() {
-
-			@Override
-			public String toString() {
-				// TODO Auto-generated method stub
-				return "Frequency results based on sum #{q_i}";
-			}
-
-			@Override
-			protected float score(BasicStats arg0, float arg1, float arg2) {
-				// TODO Auto-generated method stub
-				return arg0.getTotalTermFreq();
-			}
-		};
-		
-		searcher.setSimilarity(mySimilarity);
-		read_Queries_and_Write_Rankings(outline_path, outputpath, searcher);
-		
+		IndexSearcher searcher = createSearcher(INDEX_DIR);
+		searcher.setSimilarity(similarity);
+		read_Queries_and_Write_Rankings(OUTLINES_DIR, outputpath, searcher);
 	}
 	
+
+	/*
+	 * Function reads the queries and write the results to the file
+	 */
 	static void read_Queries_and_Write_Rankings(String outlines, String outputfilepath, IndexSearcher searcher) throws Exception {
 
 		final FileInputStream file = new FileInputStream(new File(outlines));
@@ -141,6 +98,7 @@ public class Search {
 		}
 		writer.flush();
 		writer.close();
+		System.out.println(" results written to path - "+outputfilepath );
 	}
 
 	/*
@@ -156,7 +114,7 @@ public class Search {
 	/*
 	 * Arg 1 - relative path to the index directory
 	 */
-	private static IndexSearcher createSearcher(String INDEX_DIR) throws IOException {
+	public static IndexSearcher createSearcher(String INDEX_DIR) throws IOException {
 		String index_dir = INDEX_DIR;
 		Directory dir = FSDirectory.open(Paths.get(index_dir));
 		IndexReader reader = DirectoryReader.open(dir);
