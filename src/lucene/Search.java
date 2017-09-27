@@ -19,6 +19,7 @@ package lucene;
 import java.io.BufferedReader;
 
 
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -26,14 +27,19 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
@@ -47,6 +53,7 @@ import org.apache.lucene.store.FSDirectory;
 
 import treccar.Data;
 import treccar.DeserializeData;
+import treccar.Data.Section;
 
 import org.apache.lucene.search.similarities.BasicStats;
 import org.apache.lucene.search.similarities.SimilarityBase;
@@ -61,8 +68,11 @@ public class Search {
 	public Search(SimilarityBase similarity, String INDEX_DIR, String outputpath) throws Exception
 	{
 		IndexSearcher searcher = createSearcher(INDEX_DIR);
+		Analyzer analyzer = new StandardAnalyzer();
 		searcher.setSimilarity(similarity);
 		read_Queries_and_Write_Rankings(OUTLINES_DIR, outputpath, searcher);
+		outputpath = outputpath + "Sections";
+		read_Queries_and_Write_Rankings(OUTLINES_DIR, outputpath, searcher, analyzer);
 	}
 	
 
@@ -82,6 +92,8 @@ public class Search {
 			pageId = p.getPageId().toString();
 			pageName = p.getPageName().toString();
 			int rank = 0;
+			
+			
 
 			
 
@@ -101,6 +113,72 @@ public class Search {
 		System.out.println(" results written to path - "+outputfilepath );
 	}
 
+	
+	// For Sections 
+	/*
+	 * @Param 3 analyzer
+	 */
+	static void read_Queries_and_Write_Rankings(String outlines, String outputfilepath, IndexSearcher searcher, Analyzer analyzer) throws Exception {
+
+		final FileInputStream file = new FileInputStream(new File(outlines));
+		File file_write = new File(outputfilepath);
+		// creates the file
+		file_write.createNewFile();
+		// creates a FileWriter Object
+		FileWriter writer = new FileWriter(file_write);
+
+		for (Data.Page p : DeserializeData.iterableAnnotations(file)) {
+			pageId = p.getPageId().toString();
+			pageName = p.getPageName().toString();
+			int rank = 0;
+
+			String query = null;
+			String queryId = null;
+				for(Section i : p.getChildSections())
+				{
+					query = i.getHeading();
+					queryId = i.getHeadingId();
+					
+					
+					for(String tokenized : parseKeywords(analyzer, query))
+					{
+						TopDocs foundDocs1 = searchQuery(tokenized, searcher);
+						for (ScoreDoc sd : foundDocs1.scoreDocs) {
+							Document d = searcher.doc(sd.doc);
+							rank = rank + 1;
+							String a = d.get("id");
+							writer.write(queryId + " Q0 " + a + " " + rank + " " + sd.score + " $team5-$Lucene-runFile " + "\n");
+
+						}
+					}
+					
+					
+				}
+		
+			
+			
+		}
+		writer.flush();
+		writer.close();
+	}
+	
+	public static List<String> parseKeywords(Analyzer analyzer, String query) throws IOException {
+
+        List<String> result = new ArrayList<String>();
+        TokenStream stream  = analyzer.tokenStream(null, new StringReader(query));
+        stream.reset();
+        try {
+            while(stream.incrementToken()) {
+            	result.add(stream.getAttribute(CharTermAttribute.class).toString());
+            }
+        }
+        catch(IOException e) {
+            // not thrown b/c we're using a string reader...
+        }
+        stream.close();
+        return result;
+    } 
+	
 	/*
 	 * Argument 1 - Query String returns total number of results
 	 */
