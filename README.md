@@ -13,9 +13,8 @@ Java
 7. Once index paths are given, provide the appropriate path to write the result file.
 8. In the Search.java, at the top provide path for test200.outlines file.
 9. run the program
-10. You will 6 output files and three index paths.
+10. You will get 6 output files and three index paths.
 11. No need to give paths seperately for Section files as it is concatenated from the output file path.
-12. Spearman’s Rank Correlation Coefficient is implemented in python.
 12. If you run into any issues, feel free to contact us.
 
 
