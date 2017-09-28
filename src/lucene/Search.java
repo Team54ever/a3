@@ -134,7 +134,7 @@ public class Search {
 
 			String query = null;
 			String queryId = null;
-				for(Section i : p.getChildSections())
+				for(Data.Section i : p.getChildSections())
 				{
 					query = i.getHeading();
 					queryId = i.getHeadingId();
@@ -147,7 +147,7 @@ public class Search {
 							Document d = searcher.doc(sd.doc);
 							rank = rank + 1;
 							String a = d.get("id");
-							writer.write(queryId + " Q0 " + a + " " + rank + " " + sd.score + " $team5-$Lucene-runFile " + "\n");
+							writer.write(pageId+"/"+queryId + " Q0 " + a + " " + rank + " " + sd.score + " $team5-$Lucene-runFile " + "\n");
 
 						}
 					}
